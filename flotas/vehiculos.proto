@@ -1,0 +1,21 @@
+syntax = "proto3";
+
+package vehiculos;
+
+service VehiculoService {
+  rpc EnviarDatosFlujo (stream DatosVehiculo) returns (Respuesta);
+}
+
+message DatosVehiculo {
+  string id_vehiculo = 1;
+  double latitud = 2;
+  double longitud = 3;
+  double velocidad = 4;
+  double nivel_combustible = 5;
+  double nivel_bateria = 6;
+}
+
+
+message Respuesta {
+  string mensaje = 1;
+}
