@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panel de Control de Vehículos</title>
+</head>
+<body>
+    <h1>Estado de los Vehículos</h1>
+    <table>
+        <tr>
+            <th>ID del Vehículo</th>
+            <th>Datos</th>
+        </tr>
+        {% for vehiculo in vehiculos %}
+        <tr>
+            <td>{{ vehiculo.id }}</td>
+            <td>{{ vehiculo.data }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+</body>
+</html>

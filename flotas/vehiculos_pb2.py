@@ -22,19 +22,22 @@ _runtime_version.ValidateProtobufRuntimeVersion(
 _sym_db = _symbol_database.Default()
 
 
+from google.protobuf import empty_pb2 as google_dot_protobuf_dot_empty__pb2
 
 
-DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\x0fvehiculos.proto\x12\tvehiculos\"\x8c\x01\n\rDatosVehiculo\x12\x13\n\x0bid_vehiculo\x18\x01 \x01(\t\x12\x0f\n\x07latitud\x18\x02 \x01(\x01\x12\x10\n\x08longitud\x18\x03 \x01(\x01\x12\x11\n\tvelocidad\x18\x04 \x01(\x01\x12\x19\n\x11nivel_combustible\x18\x05 \x01(\x01\x12\x15\n\rnivel_bateria\x18\x06 \x01(\x01\"\x1c\n\tRespuesta\x12\x0f\n\x07mensaje\x18\x01 \x01(\t2W\n\x0fVehiculoService\x12\x44\n\x10\x45nviarDatosFlujo\x12\x18.vehiculos.DatosVehiculo\x1a\x14.vehiculos.Respuesta(\x01\x62\x06proto3')
+DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\x0fvehiculos.proto\x12\tvehiculos\x1a\x1bgoogle/protobuf/empty.proto\"*\n\tDatosJson\x12\n\n\x02id\x18\x01 \x01(\t\x12\x11\n\tjson_data\x18\x02 \x01(\t\"\x1b\n\tRespuesta\x12\x0e\n\x06status\x18\x01 \x01(\t\":\n\x0f\x45stadoVehiculos\x12\'\n\tvehiculos\x18\x01 \x03(\x0b\x32\x14.vehiculos.DatosJson2\xa4\x01\n\x10VehiculosService\x12\x42\n\x12\x41\x63tualizarVehiculo\x12\x14.vehiculos.DatosJson\x1a\x14.vehiculos.Respuesta(\x01\x12L\n\x16ObtenerEstadoVehiculos\x12\x16.google.protobuf.Empty\x1a\x1a.vehiculos.EstadoVehiculosb\x06proto3')
 
 _globals = globals()
 _builder.BuildMessageAndEnumDescriptors(DESCRIPTOR, _globals)
 _builder.BuildTopDescriptorsAndMessages(DESCRIPTOR, 'vehiculos_pb2', _globals)
 if not _descriptor._USE_C_DESCRIPTORS:
   DESCRIPTOR._loaded_options = None
-  _globals['_DATOSVEHICULO']._serialized_start=31
-  _globals['_DATOSVEHICULO']._serialized_end=171
-  _globals['_RESPUESTA']._serialized_start=173
-  _globals['_RESPUESTA']._serialized_end=201
-  _globals['_VEHICULOSERVICE']._serialized_start=203
-  _globals['_VEHICULOSERVICE']._serialized_end=290
+  _globals['_DATOSJSON']._serialized_start=59
+  _globals['_DATOSJSON']._serialized_end=101
+  _globals['_RESPUESTA']._serialized_start=103
+  _globals['_RESPUESTA']._serialized_end=130
+  _globals['_ESTADOVEHICULOS']._serialized_start=132
+  _globals['_ESTADOVEHICULOS']._serialized_end=190
+  _globals['_VEHICULOSSERVICE']._serialized_start=193
+  _globals['_VEHICULOSSERVICE']._serialized_end=357
 # @@protoc_insertion_point(module_scope)

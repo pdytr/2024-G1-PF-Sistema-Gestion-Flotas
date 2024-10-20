@@ -3,6 +3,7 @@
 import grpc
 import warnings
 
+from google.protobuf import empty_pb2 as google_dot_protobuf_dot_empty__pb2
 import vehiculos_pb2 as vehiculos__pb2
 
 GRPC_GENERATED_VERSION = '1.66.2'
@@ -25,7 +26,7 @@ if _version_not_supported:
     )
 
 
-class VehiculoServiceStub(object):
+class VehiculosServiceStub(object):
     """Missing associated documentation comment in .proto file."""
 
     def __init__(self, channel):
@@ -34,43 +35,59 @@ class VehiculoServiceStub(object):
         Args:
             channel: A grpc.Channel.
         """
-        self.EnviarDatosFlujo = channel.stream_unary(
-                '/vehiculos.VehiculoService/EnviarDatosFlujo',
-                request_serializer=vehiculos__pb2.DatosVehiculo.SerializeToString,
+        self.ActualizarVehiculo = channel.stream_unary(
+                '/vehiculos.VehiculosService/ActualizarVehiculo',
+                request_serializer=vehiculos__pb2.DatosJson.SerializeToString,
                 response_deserializer=vehiculos__pb2.Respuesta.FromString,
+                _registered_method=True)
+        self.ObtenerEstadoVehiculos = channel.unary_unary(
+                '/vehiculos.VehiculosService/ObtenerEstadoVehiculos',
+                request_serializer=google_dot_protobuf_dot_empty__pb2.Empty.SerializeToString,
+                response_deserializer=vehiculos__pb2.EstadoVehiculos.FromString,
                 _registered_method=True)
 
 
-class VehiculoServiceServicer(object):
+class VehiculosServiceServicer(object):
     """Missing associated documentation comment in .proto file."""
 
-    def EnviarDatosFlujo(self, request_iterator, context):
+    def ActualizarVehiculo(self, request_iterator, context):
+        """Missing associated documentation comment in .proto file."""
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
+    def ObtenerEstadoVehiculos(self, request, context):
         """Missing associated documentation comment in .proto file."""
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
 
-def add_VehiculoServiceServicer_to_server(servicer, server):
+def add_VehiculosServiceServicer_to_server(servicer, server):
     rpc_method_handlers = {
-            'EnviarDatosFlujo': grpc.stream_unary_rpc_method_handler(
-                    servicer.EnviarDatosFlujo,
-                    request_deserializer=vehiculos__pb2.DatosVehiculo.FromString,
+            'ActualizarVehiculo': grpc.stream_unary_rpc_method_handler(
+                    servicer.ActualizarVehiculo,
+                    request_deserializer=vehiculos__pb2.DatosJson.FromString,
                     response_serializer=vehiculos__pb2.Respuesta.SerializeToString,
+            ),
+            'ObtenerEstadoVehiculos': grpc.unary_unary_rpc_method_handler(
+                    servicer.ObtenerEstadoVehiculos,
+                    request_deserializer=google_dot_protobuf_dot_empty__pb2.Empty.FromString,
+                    response_serializer=vehiculos__pb2.EstadoVehiculos.SerializeToString,
             ),
     }
     generic_handler = grpc.method_handlers_generic_handler(
-            'vehiculos.VehiculoService', rpc_method_handlers)
+            'vehiculos.VehiculosService', rpc_method_handlers)
     server.add_generic_rpc_handlers((generic_handler,))
-    server.add_registered_method_handlers('vehiculos.VehiculoService', rpc_method_handlers)
+    server.add_registered_method_handlers('vehiculos.VehiculosService', rpc_method_handlers)
 
 
  # This class is part of an EXPERIMENTAL API.
-class VehiculoService(object):
+class VehiculosService(object):
     """Missing associated documentation comment in .proto file."""
 
     @staticmethod
-    def EnviarDatosFlujo(request_iterator,
+    def ActualizarVehiculo(request_iterator,
             target,
             options=(),
             channel_credentials=None,
@@ -83,9 +100,36 @@ class VehiculoService(object):
         return grpc.experimental.stream_unary(
             request_iterator,
             target,
-            '/vehiculos.VehiculoService/EnviarDatosFlujo',
-            vehiculos__pb2.DatosVehiculo.SerializeToString,
+            '/vehiculos.VehiculosService/ActualizarVehiculo',
+            vehiculos__pb2.DatosJson.SerializeToString,
             vehiculos__pb2.Respuesta.FromString,
+            options,
+            channel_credentials,
+            insecure,
+            call_credentials,
+            compression,
+            wait_for_ready,
+            timeout,
+            metadata,
+            _registered_method=True)
+
+    @staticmethod
+    def ObtenerEstadoVehiculos(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(
+            request,
+            target,
+            '/vehiculos.VehiculosService/ObtenerEstadoVehiculos',
+            google_dot_protobuf_dot_empty__pb2.Empty.SerializeToString,
+            vehiculos__pb2.EstadoVehiculos.FromString,
             options,
             channel_credentials,
             insecure,

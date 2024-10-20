@@ -1,23 +1,48 @@
 import grpc
 from concurrent import futures
-from vehiculos_pb2 import Respuesta
+import json
+import time
+import vehiculos_pb2
 import vehiculos_pb2_grpc
 
-class VehiculoService(vehiculos_pb2_grpc.VehiculoServiceServicer):
-    def EnviarDatosFlujo(self, request_iterator, context):
-        for datos in request_iterator:
-            print(f"[{datos.id_vehiculo}] Ubicación: ({datos.latitud}, {datos.longitud})")
-            print(f"  Velocidad: {datos.velocidad} km/h | Combustible: {datos.nivel_combustible}%")
-            print(f"  Batería: {datos.nivel_bateria}%\n")
-        return Respuesta(mensaje="Datos recibidos correctamente")
+class VehiculosService(vehiculos_pb2_grpc.VehiculosServiceServicer):
+    def __init__(self):
+        self.datos_vehiculos = []  # Almacena los datos de los vehículos
 
-def servir():
+    def ActualizarVehiculo(self, request_iterator, context):
+        """Recibe datos de vehículos en formato JSON."""
+        print("Esperando datos de vehículos...")
+        for datos_json in request_iterator:
+            print(f"Datos JSON recibidos: {datos_json.json_data}")
+            # Convertir el JSON recibido a un diccionario
+            try:
+                datos = json.loads(datos_json.json_data)
+                self.datos_vehiculos.append(datos)  # Almacena los datos recibidos como dict
+            except json.JSONDecodeError:
+                context.set_details("Error al decodificar el JSON")
+                context.set_code(grpc.StatusCode.INVALID_ARGUMENT)
+                return vehiculos_pb2.Respuesta(status="Error al decodificar JSON")
+
+        return vehiculos_pb2.Respuesta(status="Datos recibidos correctamente")
+
+    def ObtenerEstadoVehiculos(self, request, context):
+        """Devuelve el estado de todos los vehículos."""
+        estado = vehiculos_pb2.EstadoVehiculos()
+        for vehiculo in self.datos_vehiculos:
+            estado.vehiculos.add(id=vehiculo['id'], json_data=json.dumps(vehiculo))
+        return estado
+
+def serve():
     server = grpc.server(futures.ThreadPoolExecutor(max_workers=10))
-    vehiculos_pb2_grpc.add_VehiculoServiceServicer_to_server(VehiculoService(), server)
+    vehiculos_pb2_grpc.add_VehiculosServiceServicer_to_server(VehiculosService(), server)
     server.add_insecure_port('[::]:50051')
-    print("Servidor gRPC ejecutándose en el puerto 50051...")
     server.start()
-    server.wait_for_termination()
+    print("Servidor gRPC escuchando en el puerto 50051...")
+    try:
+        while True:
+            time.sleep(86400)
+    except KeyboardInterrupt:
+        server.stop(0)
 
 if __name__ == '__main__':
-    servir()
+    serve()

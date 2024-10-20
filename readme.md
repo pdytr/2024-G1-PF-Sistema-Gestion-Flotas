@@ -6,5 +6,8 @@ cd grpc/examples/python/helloworld
 server:python greeter_server.py
 cliente:python greeter_client.py
 ----------------- Proyecto -----------------
-python -m grpc_tools.protoc --proto_path=./ --python_out=./ --grpc_python_out=./ ./account.proto
-servidor: python manage.py grpcrunserver --dev
+Situar la terminal en el directorio flotas y ejecutar:
+python -m grpc_tools.protoc -I. --python_out=. --grpc_python_out=. vehiculos.proto
+
+Ejecutar servidor dashboard python manage.py runserver
+
