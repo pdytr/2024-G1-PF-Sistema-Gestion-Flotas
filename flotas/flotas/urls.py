@@ -21,4 +21,5 @@ from server import views
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('panel/', views.panel_control, name='panel_control'),
+    path('actualizar_datos_vehiculos/', views.actualizar_datos_vehiculos, name='actualizar_datos_vehiculos'),
 ]
