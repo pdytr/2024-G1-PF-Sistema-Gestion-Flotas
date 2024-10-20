@@ -7,12 +7,18 @@ import threading
 import json
 
 def generar_datos_vehiculo(id_vehiculo):
+    # Definir los límites de La Plata
+    lat_min = -34.9515
+    lat_max = -34.8876
+    lon_min = -57.9644
+    lon_max = -57.8951
     while True:
         # Genera un diccionario con los datos del vehículo
+        #-34.9205, -57.9536
         datos = {
             "id": id_vehiculo,
-            "latitud": random.uniform(-90, 90),
-            "longitud": random.uniform(-180, 180),
+            "latitud":random.uniform(lat_min, lat_max), 
+            "longitud":random.uniform(lon_min, lon_max),
             "velocidad": random.uniform(0, 120),
             "nivel_combustible": random.uniform(0, 100),
             "nivel_bateria": random.uniform(0, 100)

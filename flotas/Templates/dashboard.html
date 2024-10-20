@@ -4,9 +4,45 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Panel de Control de Vehículos</title>
+    <!-- Leaflet CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+    <style>
+        #map {
+            height: 400px; /* Altura del mapa */
+            width: 100%; /* Ancho del mapa */
+        }
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f4f4f4;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        th, td {
+            padding: 10px;
+            border: 1px solid #ddd;
+        }
+        th {
+            background-color: #4CAF50;
+            color: white;
+        }
+        .alertas {
+            margin-top: 20px;
+            background-color: #ffcccb;
+            padding: 15px;
+            border: 1px solid #f44336;
+        }
+    </style>
 </head>
 <body>
     <h1>Estado de los Vehículos</h1>
+    
+    <div id="map"></div>
+
     <table>
         <tr>
             <th>ID del Vehículo</th>
@@ -19,5 +55,38 @@
         </tr>
         {% endfor %}
     </table>
+
+    <div class="alertas">
+        <h2>Alertas</h2>
+        {% if alertas %}
+            <ul>
+                {% for alerta in alertas %}
+                    <li>{{ alerta }}</li>
+                {% endfor %}
+            </ul>
+        {% else %}
+            <p>No hay alertas en este momento.</p>
+        {% endif %}
+    </div>
+
+    <!-- Leaflet JS -->
+    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+    
+    <!-- Datos de vehículos en formato JSON -->
+    <script type="application/json" id="vehiculos-data">
+        {{ vehiculosPos|safe }}
+    </script>
+
+    <script>
+        var map = L.map('map').setView([-34.9205, -57.9536], 13); 
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            maxZoom: 19,
+        }).addTo(map);
+        var vehiculos = JSON.parse(document.getElementById('vehiculos-data').textContent);
+        vehiculos.forEach(function(vehiculo) {
+            L.marker([vehiculo.latitud, vehiculo.longitud]).addTo(map)
+                .bindPopup('<b>ID: ' + vehiculo.id + '</b><br>Combustible: ' + vehiculo.combustible +'<br>Bateria: ' + vehiculo.bateria);
+        });
+    </script>
 </body>
 </html>

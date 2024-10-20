@@ -7,7 +7,7 @@ import vehiculos_pb2_grpc
 
 class VehiculosService(vehiculos_pb2_grpc.VehiculosServiceServicer):
     def __init__(self):
-        self.datos_vehiculos = []  # Almacena los datos de los vehículos
+        self.datos_vehiculos = [{},{}]  # Almacena los datos de los vehículos
 
     def ActualizarVehiculo(self, request_iterator, context):
         """Recibe datos de vehículos en formato JSON."""
@@ -17,7 +17,10 @@ class VehiculosService(vehiculos_pb2_grpc.VehiculosServiceServicer):
             # Convertir el JSON recibido a un diccionario
             try:
                 datos = json.loads(datos_json.json_data)
-                self.datos_vehiculos.append(datos)  # Almacena los datos recibidos como dict
+                if datos["id"] == "V123":
+                    self.datos_vehiculos[0]=datos
+                else:
+                    self.datos_vehiculos[1] = datos # Almacena los datos recibidos como dict
             except json.JSONDecodeError:
                 context.set_details("Error al decodificar el JSON")
                 context.set_code(grpc.StatusCode.INVALID_ARGUMENT)

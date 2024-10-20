@@ -2,22 +2,24 @@ syntax = "proto3";
 
 package vehiculos;
 
-import "google/protobuf/empty.proto";
-
-service VehiculosService {
-    rpc ActualizarVehiculo(stream DatosJson) returns (Respuesta);
-    rpc ObtenerEstadoVehiculos(google.protobuf.Empty) returns (EstadoVehiculos);
-}
-
-message DatosJson {
-    string id = 1;
-    string json_data = 2;  // Envío de datos en formato JSON como string
-}
-
-message Respuesta {
-    string status = 1;
+message DatosVehiculo {
+    string id_vehiculo = 1;
+    float latitud = 2;
+    float longitud = 3;
+    float velocidad = 4;
+    float nivel_combustible = 5;
+    float nivel_bateria = 6;
 }
 
 message EstadoVehiculos {
-    repeated DatosJson vehiculos = 1;  // Lista de vehículos en formato JSON
+    repeated DatosVehiculo vehiculos = 1;
+}
+
+message Respuesta {
+    string mensaje = 1;
+}
+
+service VehiculoService {
+    rpc EnviarDatosFlujo(stream DatosVehiculo) returns (Respuesta);
+    rpc ObtenerEstadoVehiculos(google.protobuf.Empty) returns (EstadoVehiculos);
 }
