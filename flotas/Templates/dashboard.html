@@ -55,7 +55,7 @@
     
     <div id="map"></div>
 
-    <table>
+    <table id="tabla-vehiculos">
         <tr>
             <th>ID del Vehículo</th>
             <th>Latitud</th>
@@ -65,7 +65,7 @@
             <th>Nivel de Batería</th>
         </tr>
         {% for vehiculo in vehiculos %}
-        <tr>
+        <tr id="vehiculo-{{ vehiculo.id }}">
             <td>{{ vehiculo.id }}</td>
             <td>{{ vehiculo.latitud }}</td>
             <td>{{ vehiculo.longitud }}</td>
@@ -107,9 +107,10 @@
             maxZoom: 19,
         }).addTo(map);
         var vehiculos = JSON.parse(document.getElementById('vehiculos-data').textContent);
+        
         vehiculos.forEach(function(vehiculo) {
             L.marker([vehiculo.latitud, vehiculo.longitud]).addTo(map)
-                .bindPopup('<b>ID: ' + vehiculo.id + '</b><br>Combustible: ' + vehiculo.combustible +'<br>Bateria: ' + vehiculo.bateria);
+                .bindPopup('<b>ID: ' + vehiculo.id + '</b><br>Combustible: ' + vehiculo.combustible +'<br>Bateria: ' + vehiculo.bateria + '<br>Velocidad: ' + vehiculo.velocidad);
         });
         function cargarVehiculos() {
             fetch('http://127.0.0.1:8000/actualizar_datos_vehiculos/') // Cambia esto a tu endpoint de Django
@@ -121,12 +122,12 @@
                             map.removeLayer(layer);
                         }
                     });
-
                     vehiculos.forEach(function(vehiculo) {
                         L.marker([vehiculo.latitud, vehiculo.longitud]).addTo(map)
-                            .bindPopup('<b>ID: ' + vehiculo.id + '</b><br>Combustible: ' + vehiculo.combustible +'<br>Bateria: ' + vehiculo.bateria);
+                            .bindPopup('<b>ID: ' + vehiculo.id + '</b><br>Combustible: ' + vehiculo.combustible +'<br>Bateria: ' + vehiculo.bateria +'<br>Velocidad: ' + vehiculo.velocidad);
                     });
                     generarAlertas(vehiculos);
+                    vehiculos.forEach(actualizarFila);
                 })
                 .catch(error => {
                     console.error("Error al actualizar el mapa:", error);
@@ -194,6 +195,19 @@
             alertasList.appendChild(noAlertasLi);
         }
     }
+    function actualizarFila(vehiculo) {
+    const fila = document.getElementById(`vehiculo-${vehiculo.id}`);
+
+    if (fila) {
+        fila.cells[1].textContent = vehiculo.latitud;
+        fila.cells[2].textContent = vehiculo.longitud;
+        fila.cells[3].textContent = vehiculo.velocidad;
+        fila.cells[4].textContent = vehiculo.combustible;
+        fila.cells[5].textContent = vehiculo.bateria;
+    } else {
+        console.warn(`No se encontró la fila para el vehículo con ID: ${vehiculo.id}`);
+    }
+}
     </script>
 </body>
 </html>

@@ -52,8 +52,9 @@ def actualizar_datos_vehiculos(request):
                         "id": ve["id"], 
                         "latitud": ve["latitud"], 
                         "longitud": ve["longitud"],
-                        "combustible": ve["nivel_combustible"],
-                        "bateria": ve["nivel_bateria"],
+                        "combustible":ve["nivel_combustible"],
+                        "bateria":ve["nivel_bateria"],
+                        "velocidad":ve["velocidad"],
                     })
             except grpc.RpcError as e:
                 print(f"Error al llamar al servidor gRPC: {e.details()}")
