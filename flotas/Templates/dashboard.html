@@ -48,9 +48,31 @@
         .btn-recargar:hover {
             background-color: #45a049;
         }
+        /* Estilos para el navbar */
+        .navbar {
+            background-color: #4CAF50;
+            overflow: hidden;
+            padding: 10px 20px;
+        }
+        .navbar a {
+            float: left;
+            display: block;
+            color: white;
+            text-align: center;
+            padding: 14px 16px;
+            text-decoration: none;
+            font-size: 17px;
+        }
+        .navbar a:hover {
+            background-color: #45a049;
+        }
     </style>
 </head>
 <body>
+    <div class="navbar">
+        <a href="{% url 'panel_control' %}">Panel de Control</a>
+        <a href="{% url 'historial' %}">Historial de Ubicaciones</a>
+    </div>
     <h1>Estado de los Vehículos</h1>
     
     <div id="map"></div>

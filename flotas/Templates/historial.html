@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Historial de Vehículos</title>
+    <!-- Leaflet CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+    <style>
+        #map {
+            height: 400px; /* Altura del mapa */
+            width: 100%; /* Ancho del mapa */
+        }
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f4f4f4;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        th, td {
+            padding: 10px;
+            border: 1px solid #ddd;
+        }
+        th {
+            background-color: #4CAF50;
+            color: white;
+        }
+        .btn-filtrar {
+            padding: 10px 15px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-bottom: 20px;
+        }
+        .btn-filtrar:hover {
+            background-color: #45a049;
+        }
+        .filter-container {
+            margin-bottom: 20px;
+        }
+        .container {
+            display: flex;
+            justify-content: space-between;
+        }
+        .table-container {
+            flex: 1;
+            margin-right: 20px; /* Espacio entre la tabla y el mapa */
+        }
+        .map-container {
+            flex: 1; /* Mapa ocupa el mismo espacio que la tabla */
+        }
+        /* Estilos para el navbar */
+        .navbar {
+            background-color: #4CAF50;
+            overflow: hidden;
+            padding: 10px 20px;
+        }
+        .navbar a {
+            float: left;
+            display: block;
+            color: white;
+            text-align: center;
+            padding: 14px 16px;
+            text-decoration: none;
+            font-size: 17px;
+        }
+        .navbar a:hover {
+            background-color: #45a049;
+        }
+    </style>
+</head>
+<body>
+    <div class="navbar">
+        <a href="{% url 'panel_control' %}">Panel de Control</a>
+        <a href="{% url 'historial' %}">Historial de Ubicaciones</a>
+    </div>
+    <h1>Historial de Vehículos</h1>
+    
+    <div class="filter-container">
+        <label for="vehicle-filter">Filtrar por ID del Vehículo:</label>
+        <input type="text" id="vehicle-filter" placeholder="Ingresa el ID del vehículo">
+        <button class="btn-filtrar" onclick="filtrarHistorial()">Filtrar</button>
+    </div>
+
+    <div class="container">
+        <div class="table-container">
+            <table id="tabla-historial">
+                <tr>
+                    <th>ID del Vehículo</th>
+                    <th>Fecha y Hora</th>
+                    <th>Latitud</th>
+                    <th>Longitud</th>
+                </tr>
+                {% for registro in historial %}
+                <td id="historial-{{ registro.vehiculo_id }}">
+                    <a href="#" 
+                    class="vehiculo-enlace" 
+                    data-latitud="{{ registro.latitud }}" 
+                    data-longitud="{{ registro.longitud }}">
+                    {{ registro.vehiculo_id }}
+                 </a> </td>
+                    <td>{{ registro.fecha_hora }}</td>
+                    <td>{{ registro.latitud }}</td>
+                    <td>{{ registro.longitud }}</td>
+                </tr>
+                {% endfor %}
+            </table>
+        </div>
+
+        <div class="map-container">
+            <div id="map"></div>
+        </div>
+    </div>
+
+    <!-- Leaflet JS -->
+    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+    
+    <script>
+        // Inicializar el mapa
+        var map = L.map('map').setView([-34.9205, -57.9536], 13); 
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            maxZoom: 19,
+        }).addTo(map);
+
+        // Función para filtrar el historial por ID del vehículo
+        function filtrarHistorial() {
+            const id = document.getElementById('vehicle-filter').value;
+            const filas = document.querySelectorAll('#tabla-historial tr:not(:first-child)'); // Ignorar la cabecera
+
+            filas.forEach(fila => {
+                const vehiculoId = fila.cells[0].textContent;
+                if (vehiculoId.includes(id) || id === "") {
+                    fila.style.display = ""; // Mostrar fila
+                } else {
+                    fila.style.display = "none"; // Ocultar fila
+                }
+            });
+
+            // Actualizar mapa según el vehículo filtrado
+            actualizarMapa(id);
+        }
+        document.addEventListener('DOMContentLoaded', function () {
+        const enlaces = document.querySelectorAll('.vehiculo-enlace');
+        enlaces.forEach(enlace => {
+            enlace.addEventListener('click', function(event) {
+                event.preventDefault(); // Prevenir el comportamiento predeterminado del enlace
+
+                const latitud = this.getAttribute('data-latitud');
+                const longitud = this.getAttribute('data-longitud');
+                cargarUbicacion(latitud, longitud);
+            });
+        });
+    });
+        function cargarUbicacion(latitud, longitud) {
+            // Limpiar el mapa y centrarlo en la nueva ubicación
+            map.eachLayer(function (layer) {
+                if (layer instanceof L.Marker) {
+                    map.removeLayer(layer);
+                }
+            });
+
+            var marker = L.marker([latitud, longitud]).addTo(map)
+                .bindPopup('Ubicación seleccionada: <br>Latitud: ' + latitud + '<br>Longitud: ' + longitud)
+                .openPopup();
+
+            // Centrar el mapa en la nueva ubicación
+            map.setView([latitud, longitud], 15);
+        }
+    </script>
+</body>
+</html>

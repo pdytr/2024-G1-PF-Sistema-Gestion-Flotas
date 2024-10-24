@@ -4,6 +4,7 @@ from google.protobuf.empty_pb2 import Empty
 import vehiculos_pb2
 import vehiculos_pb2_grpc
 import json
+from .models import Location 
 from django.http import JsonResponse
 def panel_control(request):
     """Vista para mostrar el panel de control de vehículos."""
@@ -26,6 +27,11 @@ def panel_control(request):
                     "bateria":ve["nivel_bateria"],
                     "velocidad":ve["velocidad"],
                 })
+                Location.objects.create(
+                    vehicle= ve["id"],
+                    latitude=ve["latitud"],
+                    longitude=ve["longitud"],
+                )
 
                 if ve["nivel_combustible"] < 15:
                     alertas.append(f"Alerta: Bajo nivel de combustible en el vehículo {ve["id"]}.")
@@ -56,9 +62,31 @@ def actualizar_datos_vehiculos(request):
                         "bateria":ve["nivel_bateria"],
                         "velocidad":ve["velocidad"],
                     })
+                    Location.objects.create(
+                        vehicle= ve["id"],
+                        latitude=ve["latitud"],
+                        longitude=ve["longitud"],
+                    )
             except grpc.RpcError as e:
                 print(f"Error al llamar al servidor gRPC: {e.details()}")
 
 
         # Devuelve los datos en formato JSON
         return JsonResponse(vehiculos_pos, safe=False)
+def historial(request):
+
+
+    historial = Location.objects.all().order_by('-timestamp')
+    
+    # Convertir historial a formato de diccionario para enviar a la plantilla
+    historial_data = [
+        {
+            'vehiculo_id': registro.vehicle,
+            'fecha_hora': registro.timestamp,
+            'latitud': registro.latitude,
+            'longitud': registro.longitude,
+        }
+        for registro in historial
+    ]
+
+    return render(request, 'historial.html', {'historial': historial_data})
