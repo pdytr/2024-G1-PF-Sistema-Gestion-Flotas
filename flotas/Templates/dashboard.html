@@ -70,16 +70,17 @@
 
     <div class="alertas">
         <h2>Alertas</h2>
-        {% if alertas %}
-            <ul>
+        <ul id="alertas-list">
+            {% if alertas %}
                 {% for alerta in alertas %}
                     <li>{{ alerta }}</li>
                 {% endfor %}
-            </ul>
-        {% else %}
-            <p>No hay alertas en este momento.</p>
-        {% endif %}
+            {% else %}
+                <li>No hay alertas en este momento.</li>
+            {% endif %}
+        </ul>
     </div>
+    <br>
 
     <!-- Leaflet JS -->
     <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
@@ -88,9 +89,12 @@
     <script type="application/json" id="vehiculos-data">
         {{ vehiculosPos|safe }}
     </script>
-    <button class="btn-recargar" onclick="cargarVehiculos()">Recargar Mapa</button>
+    <button class="btn-recargar" onclick="cargarVehiculos()">Recargar Mapa Una Vez</button>
+    <button class="btn-recargar" onclick="iniciarActualizacion()">Iniciar Actualización Automática</button>
+    <button class="btn-recargar" onclick="detenerActualizacion()">Detener Actualización</button>
     <script>
         var map = L.map('map').setView([-34.9205, -57.9536], 13); 
+        let intervalId;  
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
             maxZoom: 19,
         }).addTo(map);
@@ -103,23 +107,85 @@
             fetch('http://127.0.0.1:8000/actualizar_datos_vehiculos/') // Cambia esto a tu endpoint de Django
                 .then(response => response.json())
                 .then(vehiculos => {
-                    // Limpiar marcadores existentes en el mapa
+
                     map.eachLayer(function (layer) {
                         if (layer instanceof L.Marker) {
                             map.removeLayer(layer);
                         }
                     });
 
-                    // Agregar nuevos marcadores al mapa
                     vehiculos.forEach(function(vehiculo) {
                         L.marker([vehiculo.latitud, vehiculo.longitud]).addTo(map)
                             .bindPopup('<b>ID: ' + vehiculo.id + '</b><br>Combustible: ' + vehiculo.combustible +'<br>Bateria: ' + vehiculo.bateria);
                     });
+                    generarAlertas(vehiculos);
                 })
                 .catch(error => {
                     console.error("Error al actualizar el mapa:", error);
                 });
         }
+        function iniciarActualizacion() {
+            if (!intervalId) {  // Evitar múltiples intervalos
+                intervalId = setInterval(cargarVehiculos, 2000);  // Cada 2 segundos
+                console.log("Actualización automática iniciada.");
+            }
+        }
+
+        function detenerActualizacion() {
+            if (intervalId) {
+                clearInterval(intervalId);  // Detener el intervalo
+                intervalId = null;
+                console.log("Actualización automática detenida.");
+            }
+        }
+        function limpiarListaAlertas() {
+        const ulElement = document.getElementById('alertas-list');
+        if (ulElement) {
+            while (ulElement.firstChild) {
+                ulElement.removeChild(ulElement.firstChild);
+            }
+        } else {
+            console.error("No se encontró el contenedor de alertas.");
+        }
+}
+
+    function generarAlertas(vehiculos) {
+        const alertasList = document.getElementById('alertas-list');
+
+        if (!alertasList) {
+            console.error("No se encontró el contenedor de alertas.");
+            return;
+        }
+
+        // Limpiamos las alertas anteriores
+        limpiarListaAlertas();
+
+        let alertas = vehiculos
+            .filter(vehiculo => vehiculo.combustible < 15 || vehiculo.bateria < 15)
+            .map(vehiculo => {
+                let mensajes = [];
+                if (vehiculo.combustible < 15) {
+                    mensajes.push(`Alerta: Bajo nivel de combustible en el vehículo ${vehiculo.id}.`);
+                }
+                if (vehiculo.bateria < 15) {
+                    mensajes.push(`Alerta: Bajo nivel de batería en el vehículo ${vehiculo.id}.`);
+                }
+                return mensajes;
+            })
+            .flat();
+
+        if (alertas.length > 0) {
+            alertas.forEach(alerta => {
+                const li = document.createElement('li');
+                li.textContent = alerta;
+                alertasList.appendChild(li);
+            });
+        } else {
+            const noAlertasLi = document.createElement('li');
+            noAlertasLi.textContent = 'No hay alertas en este momento.';
+            alertasList.appendChild(noAlertasLi);
+        }
+    }
     </script>
 </body>
 </html>

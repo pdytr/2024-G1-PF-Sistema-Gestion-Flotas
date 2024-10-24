@@ -35,6 +35,8 @@ def panel_control(request):
 
                 if ve["nivel_combustible"] < 15:
                     alertas.append(f"Alerta: Bajo nivel de combustible en el vehículo {ve["id"]}.")
+                if ve["nivel_bateria"] < 15:
+                    alertas.append(f"Alerta: Bajo nivel de bateria en el vehículo {ve["id"]}.")
 
         except grpc.RpcError as e:
             print(f"Error al llamar al servidor gRPC: {e.details()}")
@@ -50,7 +52,6 @@ def actualizar_datos_vehiculos(request):
             cliente = vehiculos_pb2_grpc.VehiculosServiceStub(canal)
             try:
                 respuesta = cliente.ObtenerEstadoVehiculos(Empty())
-
                 for vehiculo in respuesta.vehiculos:
                     ve = json.loads(vehiculo.json_data)
                     vehiculos_pos.append({
