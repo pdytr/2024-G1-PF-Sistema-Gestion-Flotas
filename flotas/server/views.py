@@ -24,14 +24,8 @@ def panel_control(request):
                     "longitud": ve["longitud"],
                     "combustible":ve["nivel_combustible"],
                     "bateria":ve["nivel_bateria"],
+                    "velocidad":ve["velocidad"],
                 })
-                vehiculos_data.append({
-                    "id": ve["id"], 
-                    "latitud": ve["latitud"], 
-                    "longitud": ve["longitud"],
-                    "data": vehiculo.json_data
-                })
-                
 
                 if ve["nivel_combustible"] < 15:
                     alertas.append(f"Alerta: Bajo nivel de combustible en el vehículo {ve["id"]}.")
@@ -42,7 +36,7 @@ def panel_control(request):
             print(f"Error al llamar al servidor gRPC: {e.details()}")
             
     # Renderiza la plantilla con los datos de los vehículos y alertas
-    return render(request, 'dashboard.html', {'vehiculos': vehiculos_data, 'alertas': alertas,"vehiculosPos":json.dumps(vehiculos_pos)})
+    return render(request, 'dashboard.html', {'vehiculos': vehiculos_pos, 'alertas': alertas,"vehiculosPos":json.dumps(vehiculos_pos)})
 def actualizar_datos_vehiculos(request):
     """Función para actualizar los datos de los vehículos."""
     if request.method == "GET":
@@ -63,6 +57,7 @@ def actualizar_datos_vehiculos(request):
                     })
             except grpc.RpcError as e:
                 print(f"Error al llamar al servidor gRPC: {e.details()}")
+
 
         # Devuelve los datos en formato JSON
         return JsonResponse(vehiculos_pos, safe=False)

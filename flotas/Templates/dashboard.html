@@ -58,12 +58,20 @@
     <table>
         <tr>
             <th>ID del Vehículo</th>
-            <th>Datos</th>
+            <th>Latitud</th>
+            <th>Longitud</th>
+            <th>Velocidad</th>
+            <th>Nivel de Combustible</th>
+            <th>Nivel de Batería</th>
         </tr>
         {% for vehiculo in vehiculos %}
         <tr>
             <td>{{ vehiculo.id }}</td>
-            <td>{{ vehiculo.data }}</td>
+            <td>{{ vehiculo.latitud }}</td>
+            <td>{{ vehiculo.longitud }}</td>
+            <td>{{ vehiculo.velocidad }}</td>
+            <td>{{ vehiculo.combustible }}</td>
+            <td>{{ vehiculo.bateria }}</td>
         </tr>
         {% endfor %}
     </table>
