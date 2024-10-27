@@ -17,10 +17,13 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path
 from server import views
+from django.shortcuts import redirect
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('panel/', views.panel_control, name='panel_control'),
     path('actualizar_datos_vehiculos/', views.actualizar_datos_vehiculos, name='actualizar_datos_vehiculos'),
     path('historial/', views.historial, name='historial'),
+    path('', lambda request: redirect('panel_control')), 
+    
 ]
